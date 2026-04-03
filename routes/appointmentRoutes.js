@@ -3,8 +3,15 @@ const {
   book,
   getAppointments
 } = require("../controllers/appointmentController");
+const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 
-router.post("/book", book);
-router.get("/", getAppointments);
+router.post("/book", authMiddleware, roleMiddleware("user", "doctor"), book);
+router.get(
+  "/",
+  authMiddleware,
+  roleMiddleware("user", "doctor", "admin"),
+  getAppointments
+);
 
 module.exports = router;
