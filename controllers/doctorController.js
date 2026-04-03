@@ -2,11 +2,15 @@ const Doctor = require("../models/Doctor");
 const Appointment = require("../models/Appointment");
 
 exports.getDoctors = async (req, res) => {
-  const doctors = await Doctor.find({ isApproved: true }).populate(
-    "userId",
-    "name email"
-  );
-  res.json(doctors);
+  try {
+    const doctors = await Doctor.find({ isApproved: true }).populate(
+      "userId",
+      "name email"
+    );
+    return res.json(doctors);
+  } catch (err) {
+    return res.status(500).json({ msg: "Failed to load doctors" });
+  }
 };
 
 exports.applyDoctor = async (req, res) => {

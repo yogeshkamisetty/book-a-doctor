@@ -4,8 +4,6 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 
 dotenv.config();
-connectDB();
-
 const app = express();
 app.use(
   cors({
@@ -37,6 +35,16 @@ app.get("/", (req, res) => {
     res.send("API Running");
 });
 
-app.listen(process.env.PORT, () =>
-    console.log(`Server running on ${process.env.PORT}`)
-);
+async function startServer() {
+  try {
+    await connectDB();
+    app.listen(process.env.PORT, () =>
+      console.log(`Server running on ${process.env.PORT}`)
+    );
+  } catch (err) {
+    console.error("Failed to connect to MongoDB:", err.message);
+    process.exit(1);
+  }
+}
+
+startServer();
