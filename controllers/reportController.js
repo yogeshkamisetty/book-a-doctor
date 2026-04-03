@@ -58,7 +58,10 @@ exports.uploadReport = async (req, res) => {
 
 exports.getMyReports = async (req, res) => {
   try {
-    const reports = await Report.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ msg: "Unauthorized" });
+
+    const reports = await Report.find({ userId }).sort({ createdAt: -1 });
     return res.json(reports);
   } catch (err) {
     return res.status(500).json({ msg: "Failed to load reports" });
