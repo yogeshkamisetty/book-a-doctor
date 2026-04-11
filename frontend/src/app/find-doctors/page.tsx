@@ -25,6 +25,7 @@ function FindDoctorsInner() {
 
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [bookOpen, setBookOpen] = useState(false);
 
@@ -34,11 +35,19 @@ function FindDoctorsInner() {
     let alive = true;
     (async () => {
       try {
-        const data = await getApprovedDoctors();
+        const data = await getApprovedDoctors({
+          q: q || undefined,
+          timeSlot: timeSlot || undefined
+        });
         if (!alive) return;
         setDoctors(data);
-      } catch (e) {
-        console.error(e);
+        setLoadError(null);
+      } catch (e: any) {
+        if (!alive) return;
+        setLoadError(
+          e?.response?.data?.msg ??
+            "Unable to load doctors. Please check backend/database status."
+        );
       } finally {
         if (alive) setLoading(false);
       }
@@ -47,19 +56,9 @@ function FindDoctorsInner() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [q, timeSlot]);
 
-  const filtered = useMemo(() => {
-    const query = normalize(q);
-    if (!query) return doctors;
-    return doctors.filter((d) => {
-      return (
-        normalize(d.specialization).includes(query) ||
-        normalize(d.userId ?? "").includes(query) ||
-        normalize(d._id ?? "").includes(query)
-      );
-    });
-  }, [doctors, q]);
+  const filtered = useMemo(() => doctors, [doctors]);
 
   return (
     <div className="bg-white">
@@ -85,6 +84,10 @@ function FindDoctorsInner() {
 
         {loading ? (
           <div className="mt-8 text-sm text-gray-600">Loading doctors...</div>
+        ) : loadError ? (
+          <div className="mt-8 rounded-lg border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+            {loadError}
+          </div>
         ) : filtered.length === 0 ? (
           <div className="mt-8 rounded-lg border border-gray-200 bg-gray-50 p-6 text-sm text-gray-600">
             No doctors matched your search.

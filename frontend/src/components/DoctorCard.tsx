@@ -7,7 +7,12 @@ export default function DoctorCard({
   doctor: Doctor;
   onBook: () => void;
 }) {
-  const doctorName = doctor.userId ? `#${doctor.userId.slice(-6)}` : null;
+  const doctorName =
+    typeof doctor.userId === "object" && doctor.userId
+      ? doctor.userId.name || doctor.userId.email || null
+      : typeof doctor.userId === "string"
+      ? `#${doctor.userId.slice(-6)}`
+      : null;
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
