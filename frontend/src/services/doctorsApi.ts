@@ -9,8 +9,13 @@ export type Doctor = {
   availability?: string[];
 };
 
-export async function getApprovedDoctors() {
-  const res = await api.get("/api/doctors");
+export async function getApprovedDoctors(params?: { q?: string; timeSlot?: string }) {
+  const res = await api.get("/api/doctors", {
+    params: {
+      q: params?.q || undefined,
+      timeSlot: params?.timeSlot || undefined
+    }
+  });
   return res.data as Doctor[];
 }
 

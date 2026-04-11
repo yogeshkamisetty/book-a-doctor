@@ -3,10 +3,34 @@ const Appointment = require("../models/Appointment");
 
 exports.getDoctors = async (req, res) => {
   try {
-    const doctors = await Doctor.find({ isApproved: true }).populate(
+    const q = String(req.query.q || "").trim().toLowerCase();
+    const timeSlot = String(req.query.timeSlot || "").trim();
+
+    let doctors = await Doctor.find({ isApproved: true }).populate(
       "userId",
       "name email"
     );
+
+    if (q) {
+      doctors = doctors.filter((doctor) => {
+        const specialization = String(doctor.specialization || "").toLowerCase();
+        const doctorName = String(doctor.userId?.name || "").toLowerCase();
+        const doctorEmail = String(doctor.userId?.email || "").toLowerCase();
+        return (
+          specialization.includes(q) ||
+          doctorName.includes(q) ||
+          doctorEmail.includes(q)
+        );
+      });
+    }
+
+    if (timeSlot) {
+      doctors = doctors.filter((doctor) =>
+        Array.isArray(doctor.availability) &&
+        doctor.availability.includes(timeSlot)
+      );
+    }
+
     return res.json(doctors);
   } catch (err) {
     return res.status(500).json({ msg: "Failed to load doctors" });
