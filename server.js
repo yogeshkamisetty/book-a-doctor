@@ -38,9 +38,8 @@ app.get("/", (req, res) => {
 async function startServer() {
   try {
     await connectDB();
-    app.listen(process.env.PORT, () =>
-      console.log(`Server running on ${process.env.PORT}`)
-    );
+    const port = process.env.PORT || 5000;
+    app.listen(port, () => console.log(`Server running on ${port}`));
   } catch (err) {
     console.error("Failed to connect to MongoDB:", err.message);
     process.exit(1);
