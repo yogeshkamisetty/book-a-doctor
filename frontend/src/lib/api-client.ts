@@ -8,6 +8,7 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 10000, // 10 second timeout
 });
 
 // Request interceptor to attach JWT token
@@ -35,6 +36,12 @@ apiClient.interceptors.response.use(
         window.location.href = '/login';
       }
     }
+    
+    // Handle timeout
+    if (error.code === 'ECONNABORTED') {
+      console.warn('Request timeout - backend may not be responding');
+    }
+    
     return Promise.reject(error);
   }
 );

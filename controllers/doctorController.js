@@ -1,6 +1,9 @@
 import Doctor from '../models/Doctor.js';
 import User from '../models/User.js';
 import Appointment from '../models/Appointment.js';
+import { getMockDoctors } from '../mockDB.js';
+
+const USE_MOCK = process.env.NODE_ENV === 'development';
 
 export const applyAsDoctor = async (req, res) => {
   try {
@@ -8,6 +11,21 @@ export const applyAsDoctor = async (req, res) => {
 
     if (!specialization || experience === undefined || !consultationFee) {
       return res.status(400).json({ message: 'Please provide all required fields' });
+    }
+
+    // Mock mode
+    if (USE_MOCK) {
+      return res.status(201).json({
+        message: 'Doctor application submitted successfully',
+        doctor: {
+          id: 'doc_' + Date.now(),
+          specialization,
+          experience: parseInt(experience),
+          consultationFee: parseFloat(consultationFee),
+          qualifications: qualifications || [],
+          status: 'pending'
+        }
+      });
     }
 
     // Check if already a doctor
@@ -39,6 +57,38 @@ export const applyAsDoctor = async (req, res) => {
 export const getDoctors = async (req, res) => {
   try {
     const { specialization, search, page = 1, limit = 10 } = req.query;
+    
+    // Mock mode
+    if (USE_MOCK) {
+      let mockDoctors = getMockDoctors();
+      
+      if (specialization) {
+        mockDoctors = mockDoctors.filter(d => 
+          d.specialization.toLowerCase() === specialization.toLowerCase()
+        );
+      }
+      
+      if (search) {
+        mockDoctors = mockDoctors.filter(d => 
+          d.name.toLowerCase().includes(search.toLowerCase()) ||
+          d.specialization.toLowerCase().includes(search.toLowerCase())
+        );
+      }
+      
+      const pageNum = parseInt(page);
+      const limitNum = parseInt(limit);
+      const skip = (pageNum - 1) * limitNum;
+      const paginatedDoctors = mockDoctors.slice(skip, skip + limitNum);
+      
+      return res.json({
+        doctors: paginatedDoctors,
+        pagination: {
+          total: mockDoctors.length,
+          page: pageNum,
+          pages: Math.ceil(mockDoctors.length / limitNum)
+        }
+      });
+    }
     
     const query = {};
     

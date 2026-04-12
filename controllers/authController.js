@@ -1,6 +1,10 @@
 import User from '../models/User.js';
 import Doctor from '../models/Doctor.js';
 import generateToken from '../utils/generateToken.js';
+import { getMockUser, getMockDoctors } from '../mockDB.js';
+import bcrypt from 'bcryptjs';
+
+const USE_MOCK = process.env.NODE_ENV === 'development';
 
 export const register = async (req, res) => {
   try {
@@ -17,6 +21,26 @@ export const register = async (req, res) => {
 
     if (password.length < 6) {
       return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    // Mock mode
+    if (USE_MOCK) {
+      const mockUsers = [
+        { _id: 'patient_user', name, email, role: role || 'patient', phone }
+      ];
+      const user = mockUsers[0];
+      const token = generateToken(user._id, user.role);
+      
+      return res.status(201).json({
+        message: 'User registered successfully',
+        token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role
+        }
+      });
     }
 
     // Normalize email
@@ -61,6 +85,41 @@ export const login = async (req, res) => {
 
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
+    }
+
+    // Mock mode - support demo credentials
+    if (USE_MOCK) {
+      const normalizedEmail = email.toLowerCase().trim();
+      
+      // Demo credentials
+      if (normalizedEmail === 'patient@example.com' && password === 'pass123') {
+        const token = generateToken('patient_user_123', 'patient');
+        return res.json({
+          message: 'Login successful',
+          token,
+          user: { id: 'patient_user_123', name: 'John Patient', email, role: 'patient' }
+        });
+      }
+      
+      if (normalizedEmail === 'doctor@example.com' && password === 'pass123') {
+        const token = generateToken('doctor_user_123', 'doctor');
+        return res.json({
+          message: 'Login successful',
+          token,
+          user: { id: 'doctor_user_123', name: 'Dr. Sarah Smith', email, role: 'doctor' }
+        });
+      }
+      
+      if (normalizedEmail === 'admin@example.com' && password === 'pass123') {
+        const token = generateToken('admin_user_123', 'admin');
+        return res.json({
+          message: 'Login successful',
+          token,
+          user: { id: 'admin_user_123', name: 'Admin User', email, role: 'admin' }
+        });
+      }
+      
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
 
     // Normalize email
