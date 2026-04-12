@@ -1,5 +1,5 @@
 import apiClient from '@/lib/api-client';
-import { Doctor, PaginatedResponse, DoctorFilterOptions } from '@/types';
+import { Doctor, PaginatedResponse, DoctorFilterOptions, Appointment } from '@/types';
 
 export const doctorService = {
   // Get all doctors with filters
@@ -38,7 +38,7 @@ export const doctorService = {
   },
 
   // Get doctor's appointments
-  getDoctorAppointments: async (): Promise<{ appointments: any[] }> => {
+  getDoctorAppointments: async (): Promise<{ appointments: Appointment[] }> => {
     const response = await apiClient.get('/doctors/my-appointments');
     return response.data;
   },

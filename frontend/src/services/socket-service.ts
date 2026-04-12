@@ -3,11 +3,23 @@
 
 import io, { Socket } from 'socket.io-client';
 
+interface MessageData {
+  recipientId: string;
+  message: string;
+  appointmentId?: string;
+  timestamp?: number;
+}
+
+interface UserStatusData {
+  userId: string;
+  status: 'online' | 'offline';
+}
+
 let socket: Socket | null = null;
 
 export const socketService = {
   // Connect to Socket.io server
-  connect: (serverUrl: string = process.env.NEXT_PUBLIC_API_URL): Socket => {
+  connect: (serverUrl: string = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000'): Socket => {
     if (socket) return socket;
 
     socket = io(serverUrl, {
@@ -48,7 +60,7 @@ export const socketService = {
   },
 
   // Listen for messages
-  onMessageReceived: (callback: (data: any) => void): void => {
+  onMessageReceived: (callback: (data: MessageData) => void): void => {
     if (!socket) throw new Error('Socket not connected');
     socket.on('receive_message', callback);
   },
@@ -72,7 +84,7 @@ export const socketService = {
   },
 
   // Get online status
-  onUserStatusChanged: (callback: (data: any) => void): void => {
+  onUserStatusChanged: (callback: (data: UserStatusData) => void): void => {
     if (!socket) throw new Error('Socket not connected');
     socket.on('user_status_changed', callback);
   },

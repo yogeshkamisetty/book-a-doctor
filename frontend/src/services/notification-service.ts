@@ -44,7 +44,7 @@ export const emailService = {
   // Send appointment reminder (backend will schedule this)
   sendAppointmentReminder: async (
     email: string,
-    appointmentDetails: any
+    appointmentDetails: Record<string, string>
   ): Promise<void> => {
     await emailService.sendEmail({
       to: email,

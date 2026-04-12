@@ -3,7 +3,9 @@
 import { useAuthStore } from '@/store';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LogOut, User, Settings } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
+
+export const dynamic = 'force-dynamic';
 
 export default function DashboardPage() {
   const { user, logout } = useAuthStore();

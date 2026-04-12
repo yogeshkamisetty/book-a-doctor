@@ -14,7 +14,7 @@ let localVideoTrack: ICameraVideoTrack | null = null;
 
 export const agoraService = {
   // Initialize Agora client
-  initializeClient: async (appId: string): Promise<IAgoraRTCClient> => {
+  initializeClient: async (): Promise<IAgoraRTCClient> => {
     if (agoraClient) return agoraClient;
 
     AgoraRTC.setLogLevel(4);
@@ -29,8 +29,11 @@ export const agoraService = {
     uid: string | number | null
   ): Promise<void> => {
     if (!agoraClient) throw new Error('Agora client not initialized');
+    
+    const appId = process.env.NEXT_PUBLIC_AGORA_APP_ID;
+    if (!appId) throw new Error('Agora App ID not configured');
 
-    await agoraClient.join(process.env.NEXT_PUBLIC_AGORA_APP_ID, channelName, token, uid);
+    await agoraClient.join(appId, channelName, token, uid);
   },
 
   // Create local audio track

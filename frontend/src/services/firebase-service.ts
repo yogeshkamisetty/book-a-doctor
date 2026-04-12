@@ -2,7 +2,7 @@
 // FREE TIER: 100 connections, 1GB storage, 100 database operations/day
 
 import { initializeApp } from 'firebase/app';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { getMessaging, getToken, onMessage, Messaging } from 'firebase/messaging';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -17,7 +17,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Messaging (get messaging service)
-let messaging: any = null;
+let messaging: Messaging | null = null;
 
 if (typeof window !== 'undefined') {
   try {
@@ -25,6 +25,15 @@ if (typeof window !== 'undefined') {
   } catch (error) {
     console.log('Firebase Messaging not available:', error);
   }
+}
+
+interface PushNotificationPayload {
+  notification?: {
+    title?: string;
+    body?: string;
+    icon?: string;
+  };
+  data?: Record<string, string>;
 }
 
 export const firebaseService = {
@@ -48,7 +57,7 @@ export const firebaseService = {
   },
 
   // Listen for incoming messages
-  onMessageReceived: (callback: (payload: any) => void) => {
+  onMessageReceived: (callback: (payload: PushNotificationPayload) => void) => {
     if (!messaging) return;
 
     onMessage(messaging, (payload) => {

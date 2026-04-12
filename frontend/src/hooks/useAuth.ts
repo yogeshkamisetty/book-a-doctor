@@ -2,6 +2,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { authService } from '@/services/auth-service';
 import { useAuthStore } from '@/store';
 import { LoginResponse, RegisterResponse } from '@/types';
+import type { AxiosError } from 'axios';
 
 export const useLogin = () => {
   const setUser = useAuthStore((state) => state.setUser);
@@ -14,7 +15,7 @@ export const useLogin = () => {
       setToken(data.token);
       setUser(data.user);
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       console.error('Login failed:', error.response?.data?.message || error.message);
     },
   });
@@ -35,7 +36,7 @@ export const useRegister = () => {
       setToken(data.token);
       setUser(data.user);
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       console.error('Registration failed:', error.response?.data?.message || error.message);
     },
   });

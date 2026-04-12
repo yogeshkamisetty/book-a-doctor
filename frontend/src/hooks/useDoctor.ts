@@ -1,6 +1,7 @@
-import { useQuery, useMutation, useInfiniteQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { doctorService } from '@/services/doctor-service';
 import { DoctorFilterOptions } from '@/types';
+import type { AxiosError } from 'axios';
 
 export const useDoctors = (filters?: DoctorFilterOptions) => {
   return useQuery({
@@ -28,7 +29,7 @@ export const useApplyAsDoctor = () => {
     onSuccess: (data) => {
       console.log('Doctor application submitted:', data.message);
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       console.error('Failed to apply:', error.response?.data?.message || error.message);
     },
   });

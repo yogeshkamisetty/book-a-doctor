@@ -1,6 +1,7 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { appointmentService } from '@/services/appointment-service';
 import { AppointmentFilterOptions } from '@/types';
+import type { AxiosError } from 'axios';
 
 export const useBookAppointment = () => {
   return useMutation({
@@ -14,7 +15,7 @@ export const useBookAppointment = () => {
     onSuccess: (data) => {
       console.log('Appointment booked:', data.message);
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       console.error('Booking failed:', error.response?.data?.message || error.message);
     },
   });
@@ -34,7 +35,7 @@ export const useCancelAppointment = () => {
     onSuccess: (data) => {
       console.log(data.message);
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       console.error('Cancellation failed:', error.response?.data?.message);
     },
   });

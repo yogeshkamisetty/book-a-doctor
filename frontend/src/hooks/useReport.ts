@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { reportService } from '@/services/report-service';
+import type { AxiosError } from 'axios';
 
 export const useUploadReport = () => {
   return useMutation({
@@ -7,7 +8,7 @@ export const useUploadReport = () => {
     onSuccess: (data) => {
       console.log('Report uploaded:', data.message);
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       console.error('Upload failed:', error.response?.data?.message || error.message);
     },
   });

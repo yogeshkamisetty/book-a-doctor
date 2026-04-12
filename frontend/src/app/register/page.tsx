@@ -7,6 +7,8 @@ import { useRegister } from '@/hooks/useAuth';
 import toast from 'react-hot-toast';
 import { User, Mail, Lock, Phone, Loader } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -43,8 +45,9 @@ export default function RegisterPage() {
       });
       toast.success('Registration successful!');
       router.push('/dashboard');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Registration failed');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } } | undefined;
+      toast.error(err?.response?.data?.message || 'Registration failed');
     }
   };
 

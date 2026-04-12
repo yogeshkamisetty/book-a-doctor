@@ -1,5 +1,5 @@
 import apiClient from '@/lib/api-client';
-import { User, Doctor, Appointment, PaginatedResponse } from '@/types';
+import { User, Doctor, PaginatedResponse } from '@/types';
 
 export const adminService = {
   // Get pending doctor applications

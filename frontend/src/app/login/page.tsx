@@ -7,6 +7,8 @@ import { useLogin } from '@/hooks/useAuth';
 import toast from 'react-hot-toast';
 import { Mail, Lock, Loader } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,8 +27,9 @@ export default function LoginPage() {
       await loginMutation.mutateAsync({ email, password });
       toast.success('Login successful!');
       router.push('/dashboard');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Login failed');
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } } | undefined;
+      toast.error(err?.response?.data?.message || 'Login failed');
     }
   };
 
@@ -98,7 +101,7 @@ export default function LoginPage() {
 
         {/* Sign Up Link */}
         <p className='text-center text-gray-600'>
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href='/register' className='text-blue-600 font-semibold hover:text-blue-700'>
             Sign up
           </Link>

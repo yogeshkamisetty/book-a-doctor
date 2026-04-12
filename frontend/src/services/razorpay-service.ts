@@ -3,8 +3,15 @@
 
 declare global {
   interface Window {
-    Razorpay: any;
+    Razorpay: RazorpayConstructor;
   }
+}
+
+interface RazorpayConstructor {
+  new (options: RazorpayOptions): {
+    open: () => void;
+    close: () => void;
+  };
 }
 
 export interface RazorpayOptions {
@@ -56,7 +63,6 @@ export const razorpayService = {
     }
 
     const rzp = new window.Razorpay({
-      key: options.key,
       ...options,
     });
 
@@ -65,9 +71,9 @@ export const razorpayService = {
 
   // Create order (backend call - you'll implement this)
   createOrder: async (
-    amount: number,
-    appointmentId: string
+    amount: number
   ): Promise<{ orderId: string; amount: number }> => {
+    // Note: appointmentId will be used when connecting to backend
     // This should be called from your backend
     // Backend should create order on Razorpay
     return {
@@ -77,11 +83,8 @@ export const razorpayService = {
   },
 
   // Verify payment (backend call)
-  verifyPayment: async (
-    orderId: string,
-    paymentId: string,
-    signature: string
-  ): Promise<{ success: boolean; message: string }> => {
+  verifyPayment: async (): Promise<{ success: boolean; message: string }> => {
+    // Note: orderId, paymentId, signature will be used when connecting to backend
     // This should be called from your backend
     // Backend should verify signature with Razorpay
     return {
